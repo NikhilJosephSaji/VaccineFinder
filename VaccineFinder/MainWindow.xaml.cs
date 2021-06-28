@@ -26,8 +26,8 @@ namespace VaccineFinder
         private const string getstates = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
         private const string getdistrict = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/";
         private const string Getalllist = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id={0}&date={1}";
-        private DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
-        private DispatcherTimer dispatcherTimersms = new System.Windows.Threading.DispatcherTimer();
+        private DispatcherTimer dispatcherTimer = new DispatcherTimer();
+        private DispatcherTimer dispatcherTimersms = new DispatcherTimer();
         private const string InternetErr = "No Internet Connection. Please Connect to Internet";
         private bool LoopSMS = false;
         private SoundPlayer theSound;
@@ -42,13 +42,14 @@ namespace VaccineFinder
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string xr = await InternetError(InternetErr);
+            if (xr == "false")
             {
                 return;
             }
             if (District.SelectedValue == null || State.SelectedValue == null)
             {
-                ErrorDisplay("Select State and District");
+                await ErrorDisplay("Select State and District");
                 return;
             }
             LayoutRoot.Visibility = Visibility.Visible;
@@ -124,7 +125,7 @@ namespace VaccineFinder
             LayoutRoot.Visibility = Visibility.Collapsed;
         }
 
-        private async void ErrorDisplay(string Error)
+        private async Task ErrorDisplay(string Error)
         {
             TextGrid.Visibility = Visibility.Visible;
             TextContent.Text = Error;
@@ -155,29 +156,35 @@ namespace VaccineFinder
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!InternetError(InternetErr))
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            System.Diagnostics.FileVersionInfo fvi = System.Diagnostics.FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = fvi.FileVersion;
+            await ErrorDisplay("Vaccine Finder Version : " + version + " Loading...");
+            string x = await InternetError(InternetErr);
+            if (x == "false")
             {
+                Environment.Exit(0);
                 return;
             }
             State.Focus();
             DatePicker.SelectedDate = DateTime.Today;
             var result = await Task.Run(() => ReturnHttpResult(getstates));
-            var list = JsonConvert.DeserializeObject<StateRoot>(result);
+            StateRoot list = JsonConvert.DeserializeObject<StateRoot>(result);
             var states = list.states;
             State.ItemsSource = states;
             State.DisplayMemberPath = "state_name";
             State.SelectedValuePath = "state_id";
         }
 
-        private bool InternetError(string Error)
+        private async Task<string> InternetError(string Error)
         {
             if (!InternetAvailability.IsInternetAvailable())
             {
-                ErrorDisplay(Error);
-                return false;
+                await ErrorDisplay(Error);
+                return "false";
             }
 
-            return true;
+            return "true";
         }
 
         private string ReturnHttpResult(string url)
@@ -208,21 +215,22 @@ namespace VaccineFinder
             District.SelectedValuePath = "district_id";
         }
 
-        private void AppNOtify_Click(object sender, RoutedEventArgs e)
+        private async void AppNOtify_Click(object sender, RoutedEventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string x = await InternetError(InternetErr);
+            if (x == "false")
             {
                 return;
             }
             if (District.SelectedValue == null || State.SelectedValue == null)
             {
-                ErrorDisplay("Select State and District");
+                await ErrorDisplay("Select State and District");
                 return;
             }
             AppNOtify.IsEnabled = false;
             AppNOtify.Background = System.Windows.Media.Brushes.Green;
             AppNOtify.Foreground = System.Windows.Media.Brushes.White;
-            ErrorDisplay("Activated App Notification Dont Close Application");
+            await ErrorDisplay("Activated App Notification Dont Close Application");
             dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             dispatcherTimer.Interval = new TimeSpan(0, 0, 20);
@@ -231,7 +239,8 @@ namespace VaccineFinder
 
         private async void dispatcherTimer_Tick(object sender, EventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string xr = await InternetError(InternetErr);
+            if (xr == "false")
             {
                 dispatcherTimer.Stop();
                 return;
@@ -302,13 +311,13 @@ namespace VaccineFinder
 
         private void EnableControls(bool v)
         {
-            if (!v) 
+            if (!v)
             {
                 State.IsEnabled = v;
                 District.IsEnabled = v;
                 DatePicker.IsEnabled = v;
                 SearchBtn.IsEnabled = v;
-            } 
+            }
             else
             {
                 State.IsEnabled = v;
@@ -352,15 +361,16 @@ namespace VaccineFinder
                 }).Start();
             }
         }
-        private void SMSNotify_Click(object sender, RoutedEventArgs e)
+        private async void SMSNotify_Click(object sender, RoutedEventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string x = await InternetError(InternetErr);
+            if (x == "false")
             {
                 return;
             }
             if (District.SelectedValue == null || State.SelectedValue == null)
             {
-                ErrorDisplay("Select State and District");
+                await ErrorDisplay("Select State and District");
                 return;
             }
 
@@ -376,7 +386,7 @@ namespace VaccineFinder
             }
         }
 
-        private void Sms(bool loop = false)
+        private async void Sms(bool loop = false)
         {
             if (loop)
             {
@@ -384,7 +394,7 @@ namespace VaccineFinder
                 SMSLoop.Foreground = System.Windows.Media.Brushes.White;
                 loopbtncontent.Text = "STOP";
                 SMSNotify.IsEnabled = false;
-                ErrorDisplay("Activated SMS Notification Don't Close Application.\r\n NOTE : Repeated SMS is Send From Application in Each 20 Sec unless you Stop.");
+                await ErrorDisplay("Activated SMS Notification Don't Close Application.\r\n NOTE : Repeated SMS is Send From Application in Each 20 Sec unless you Stop.");
             }
             else
             {
@@ -392,7 +402,7 @@ namespace VaccineFinder
                 SMSLoop.IsEnabled = false;
                 SMSNotify.Background = System.Windows.Media.Brushes.Green;
                 SMSNotify.Foreground = System.Windows.Media.Brushes.White;
-                ErrorDisplay("Activated SMS Notification Don't Close Application");
+                await ErrorDisplay("Activated SMS Notification Don't Close Application");
             }
             dispatcherTimersms = new DispatcherTimer();
             dispatcherTimersms.Tick += new EventHandler(SMSTimer_tick);
@@ -402,7 +412,8 @@ namespace VaccineFinder
 
         private async void SMSTimer_tick(object sender, EventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string xr = await InternetError(InternetErr);
+            if (xr == "false")
             {
                 if (!LoopSMS)
                 {
@@ -464,7 +475,7 @@ namespace VaccineFinder
                     }
                     else
                     {
-                        ErrorDisplay("Send Successfully");
+                        await ErrorDisplay("Send Successfully");
                     }
                 }
                 else
@@ -475,7 +486,7 @@ namespace VaccineFinder
                     }
                     else
                     {
-                        ErrorDisplay("SMS Send Failed");
+                        await ErrorDisplay("SMS Send Failed");
                     }
                     VaccineHelper.Instance.SmsUrl = "";
                     VaccineHelper.Instance.IsShown = false;
@@ -540,15 +551,16 @@ namespace VaccineFinder
             }
         }
 
-        private void SMSLoop_Click(object sender, RoutedEventArgs e)
+        private async void SMSLoop_Click(object sender, RoutedEventArgs e)
         {
-            if (!InternetError(InternetErr))
+            string xr = await InternetError(InternetErr);
+            if (xr == "false")
             {
                 return;
             }
             if (District.SelectedValue == null || State.SelectedValue == null)
             {
-                ErrorDisplay("Select State and District");
+                await ErrorDisplay("Select State and District");
                 return;
             }
 
