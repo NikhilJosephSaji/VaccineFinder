@@ -159,6 +159,7 @@ namespace VaccineFinder
             {
                 return;
             }
+            State.Focus();
             DatePicker.SelectedDate = DateTime.Today;
             var result = await Task.Run(() => ReturnHttpResult(getstates));
             var list = JsonConvert.DeserializeObject<StateRoot>(result);

@@ -48,9 +48,9 @@
             <CheckBox Margin="16,0,0,0" x:Name="Paid"/>
         </StackPanel>
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,80,0,0">
-            <DataGrid AutoGenerateColumns="False" x:Name="VaccineGrid" Width="900" Height="300" Background="White">
+            <DataGrid IsReadOnly="True" AutoGenerateColumns="False" x:Name="VaccineGrid" Width="900" Height="300" Background="White">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Hospital" Binding="{Binding name}"/>
+                    <DataGridTextColumn Header="Hospital" Binding="{Binding name}" Width="140"/>
                     <DataGridTextColumn Header="Address" Binding="{Binding address}" Width="220"/>
                     <DataGridTextColumn Header="Fee Type" Binding="{Binding fee_type}"/>
                     <DataGridTextColumn Header="Date" Binding="{Binding date}"/>
