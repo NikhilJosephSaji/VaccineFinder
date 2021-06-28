@@ -30,6 +30,8 @@ namespace VaccineFinder
         private DispatcherTimer dispatcherTimersms = new System.Windows.Threading.DispatcherTimer();
         private const string InternetErr = "No Internet Connection. Please Connect to Internet";
         private bool LoopSMS = false;
+        private SoundPlayer theSound;
+        private bool sound = false;
 
         public MainWindow()
         {
@@ -205,7 +207,7 @@ namespace VaccineFinder
             District.SelectedValuePath = "district_id";
         }
 
-        private async void AppNOtify_Click(object sender, RoutedEventArgs e)
+        private void AppNOtify_Click(object sender, RoutedEventArgs e)
         {
             if (!InternetError(InternetErr))
             {
@@ -228,6 +230,12 @@ namespace VaccineFinder
 
         private async void dispatcherTimer_Tick(object sender, EventArgs e)
         {
+            if (!InternetError(InternetErr))
+            {
+                dispatcherTimer.Stop();
+                return;
+            }
+            EnableControls(false);
             CultureInfo esC = new CultureInfo("es-ES");
             var tempdate = DatePicker.SelectedDate.Value.ToString("d", esC);
             var newdate = tempdate.Replace('/', '-');
@@ -269,7 +277,7 @@ namespace VaccineFinder
             }
             if (newlist.Any())
             {
-                new Thread(delegate () { PlayNotificationSound(); }).Start();
+                PlayNotificationSound();
                 var li = newlist.Select(c => c.name + " : " + c.available_capacity).ToList();
                 var str = "";
                 foreach (var x in li)
@@ -277,14 +285,39 @@ namespace VaccineFinder
                     str = str + " , " + x;
                 }
                 dispatcherTimer.Stop();
-                await Task.Run(() => MessageBox.Show("Vaccines Found in these Hospitals :" + str));
+                var res = await Task.Run(() => MessageBox.Show("Vaccines Found in these Hospitals :" + str));
+                if (res == MessageBoxResult.OK)
+                {
+                    if (theSound != null)
+                        theSound.Stop();
+                    sound = false;
+                }
                 AppNOtify.IsEnabled = true;
                 AppNOtify.Background = System.Windows.Media.Brushes.LightGreen;
                 AppNOtify.Foreground = System.Windows.Media.Brushes.Black;
             }
+            EnableControls(true);
         }
 
-        public async void PlayNotificationSound()
+        private void EnableControls(bool v)
+        {
+            if (!v) 
+            {
+                State.IsEnabled = v;
+                District.IsEnabled = v;
+                DatePicker.IsEnabled = v;
+                SearchBtn.IsEnabled = v;
+            } 
+            else
+            {
+                State.IsEnabled = v;
+                District.IsEnabled = v;
+                DatePicker.IsEnabled = v;
+                SearchBtn.IsEnabled = v;
+            }
+        }
+
+        public void PlayNotificationSound()
         {
             bool found = false;
             try
@@ -296,10 +329,8 @@ namespace VaccineFinder
                         Object o = key.GetValue(null); // pass null to get (Default)
                         if (o != null)
                         {
-                            SoundPlayer theSound = new SoundPlayer((String)o);
+                            theSound = new SoundPlayer((String)o);
                             theSound.PlayLooping();
-                            await Task.Run(() => Thread.Sleep(20000));
-                            theSound.Stop();
                             found = true;
                         }
                     }
@@ -309,13 +340,15 @@ namespace VaccineFinder
             { }
             if (!found)
             {
-                int i = 0;
-                while (i < 20)
+                sound = true;
+                new Thread(delegate ()
                 {
-                    SystemSounds.Beep.Play();
-                    await Task.Run(() => Thread.Sleep(1200));
-                    i++;
-                }
+                    while (sound)
+                    {
+                        SystemSounds.Beep.Play();
+                        Thread.Sleep(1200);
+                    }
+                }).Start();
             }
         }
         private void SMSNotify_Click(object sender, RoutedEventArgs e)
@@ -359,8 +392,8 @@ namespace VaccineFinder
                 SMSNotify.Background = System.Windows.Media.Brushes.Green;
                 SMSNotify.Foreground = System.Windows.Media.Brushes.White;
                 ErrorDisplay("Activated SMS Notification Don't Close Application");
-            }            
-            dispatcherTimersms = new System.Windows.Threading.DispatcherTimer();
+            }
+            dispatcherTimersms = new DispatcherTimer();
             dispatcherTimersms.Tick += new EventHandler(SMSTimer_tick);
             dispatcherTimersms.Interval = new TimeSpan(0, 0, 20);
             dispatcherTimersms.Start();
@@ -368,6 +401,15 @@ namespace VaccineFinder
 
         private async void SMSTimer_tick(object sender, EventArgs e)
         {
+            if (!InternetError(InternetErr))
+            {
+                if (!LoopSMS)
+                {
+                    dispatcherTimersms.Stop();
+                }
+                return;
+            }
+            EnableControls(false);
             CultureInfo esC = new CultureInfo("es-ES");
             var tempdate = DatePicker.SelectedDate.Value.ToString("d", esC);
             var newdate = tempdate.Replace('/', '-');
@@ -409,20 +451,15 @@ namespace VaccineFinder
             }
             if (newlist.Any())
             {
-                var li = newlist.Select(c => c.name + " : " + c.available_capacity).ToList();
-                var str = "";
-                foreach (var x in li)
-                {
-                    str = str + " , " + x;
-                }
                 if (!LoopSMS)
                     dispatcherTimersms.Stop();
-                bool res = await Task.Run(() => SendSMS("Vaccine Found in These Hospitals : " + str));
+                PlayNotificationSound();
+                bool res = await Task.Run(() => SendSMS(string.Format("Totaly {0} Vsccine Found", newlist.Count().ToString())));
                 if (res)
                 {
                     if (!LoopSMS)
                     {
-                        MessageBox.Show("Send SMS");
+                        var status = MessageBox.Show("Send SMS");
                     }
                     else
                     {
@@ -431,15 +468,16 @@ namespace VaccineFinder
                 }
                 else
                 {
-
                     if (!LoopSMS)
                     {
-                        MessageBox.Show("Failed");
+                        MessageBox.Show("SMS Send Failed");
                     }
                     else
                     {
-                        ErrorDisplay("Failed");
+                        ErrorDisplay("SMS Send Failed");
                     }
+                    VaccineHelper.Instance.SmsUrl = "";
+                    VaccineHelper.Instance.IsShown = false;
                 }
                 if (!LoopSMS)
                 {
@@ -448,7 +486,11 @@ namespace VaccineFinder
                     SMSNotify.Background = System.Windows.Media.Brushes.LightGreen;
                     SMSNotify.Foreground = System.Windows.Media.Brushes.Black;
                 }
+                if (theSound != null)
+                    theSound.Stop();
+                sound = false;
             }
+            EnableControls(true);
         }
 
         private bool SendSMS(string msg)
@@ -464,9 +506,16 @@ namespace VaccineFinder
                 {
                     smsurl = VaccineHelper.Instance.SmsUrl.Replace("+custmessage+", msg);
                 }
+                var responseData = "";
                 HttpWebRequest request = WebRequest.Create(smsurl) as HttpWebRequest;
                 HttpWebResponse response = request.GetResponse() as HttpWebResponse;
-                if (response.StatusCode == HttpStatusCode.OK)
+                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    responseData = reader.ReadToEnd();
+                    reader.Close();
+                }
+                response.Close();
+                if (response.StatusCode == HttpStatusCode.OK && !responseData.ToUpper().Contains("ERROR"))
                 { return true; }
                 else
                 { return false; }

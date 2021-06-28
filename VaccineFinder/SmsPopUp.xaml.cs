@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -58,6 +60,50 @@ namespace VaccineFinder
                 return true;
             }
             return false;
+        }
+
+        private async void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Url.Text = Url.Text != null ? Url.Text.Trim() : Url.Text;
+            if (Url.Text != null && Url.Text != string.Empty)
+            {
+                if (checkcorecturl())
+                {
+                    await SendSMS("Sample SMS From Vaccine Finder");
+                }
+                else
+                { ErrorText.Text = "Invalid URL"; }
+            }
+            else
+            {
+                ErrorText.Text = "Insert SMS URL";
+            }
+        }
+
+        private async Task SendSMS(string msg)
+        {
+            var smsurl = Url.Text;
+            try
+            {                
+                var responseData = "";
+                HttpWebRequest request = WebRequest.Create(smsurl) as HttpWebRequest;
+                HttpWebResponse response = await request.GetResponseAsync() as HttpWebResponse;
+                using(StreamReader reader = new StreamReader(response.GetResponseStream()))
+                {
+                    responseData = reader.ReadToEnd();
+                    reader.Close();
+                }
+                response.Close();
+                if (response.StatusCode == HttpStatusCode.OK && !responseData.ToUpper().Contains("ERROR"))
+                { ErrorText.Text = "SMS Send"; }
+                else
+                { ErrorText.Text = "Failed Send"; }
+
+            }
+            catch (Exception)
+            {
+                ErrorText.Text = "SMS Failed Invalid URL";
+            }
         }
     }
 }

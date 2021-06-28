@@ -99,7 +99,7 @@
             <StackPanel Margin="0,15,60,0" Orientation="Horizontal" VerticalAlignment="Top" Height="120" HorizontalAlignment="Right">
                 <WrapPanel>
                     <StackPanel VerticalAlignment="Center">
-                        <Button Width="80" Click="Button_Click"  Content="Search" Margin="0,13,30,0" Height="28"  Style="{StaticResource ConfBtn}" Cursor="Hand"/>
+                        <Button Width="80" Click="Button_Click"  Content="Search" Margin="0,13,30,0" Height="28"  Style="{StaticResource ConfBtn}" Cursor="Hand" x:Name="SearchBtn"/>
                     </StackPanel>
                     <StackPanel Margin="0,0,10,0">
                         <Button Margin="0,0,0,0" Width="77" Height="24" Click="Button_Click_1" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11" Cursor="Hand">Book Vaccine</Button>
