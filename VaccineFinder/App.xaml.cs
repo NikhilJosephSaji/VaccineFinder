@@ -21,9 +21,13 @@ namespace VaccineFinder
 
         public bool? SMSstringFormat { get; set; }
         public string SmsUrl { get; set; }
+        public bool IsUserLogedIn { get; set; }
+
+        public string UserName { get; set; }
         VaccineHelper()
         {
             IsShown = false;
+            IsUserLogedIn = false;
         }
 
         private static VaccineHelper instance = null;

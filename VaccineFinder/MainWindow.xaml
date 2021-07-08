@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VaccineFinder"  ResizeMode="CanMinimize"
         mc:Ignorable="d" Loaded="Window_Loaded" Icon="Vaccine.png"
-        Title="Vaccine Finder" Height="520" Width="1000">
+        Title="Vaccine Finder" Height="560" Width="1200">
     <Window.Resources>
         <Storyboard x:Key="Rotation" x:Name="RotationStoryboard">
             <DoubleAnimation Storyboard.TargetName="RotateTransform"  
@@ -18,48 +18,89 @@
     </Window.Resources>
     <Grid>
         <StackPanel VerticalAlignment="Top" Margin="0,30,0,0" Orientation="Horizontal">
-            <TextBlock Text="State :" Margin="20,5,0,0" Padding="0,0,17,0"/>
+            <TextBlock Text="State :" Margin="20,5,0,0" Padding="0,0,17,0" FontSize="15" FontWeight="Bold"/>
             <Border BorderThickness="2" BorderBrush="Black" Width="150"  Margin="0,0,0,0" CornerRadius="5,0,0,5">
                 <ComboBox x:Name="State" Margin="0,0,0,0" SelectionChanged="State_SelectionChanged" Style="{StaticResource SimpleComboBox}"/>
             </Border>
-            <TextBlock Text="District :" Margin="20,0,0,0" Padding="0,5,17,0"/>
+            <TextBlock Text="District :" Margin="20,0,0,0" Padding="0,5,17,0" FontSize="15" FontWeight="Bold"/>
             <Border BorderThickness="2" BorderBrush="Black" Width="150"  Margin="0,0,0,0" CornerRadius="5,0,0,5">
                 <ComboBox x:Name="District"  Margin="0,0,0,0" Style="{StaticResource SimpleComboBox}"/>
             </Border>
-            <TextBlock Text="Date :" Margin="20,5,0,0" Padding="0,0,0,0"/>
+            <TextBlock Text="Date :" Margin="20,5,0,0" Padding="0,0,0,0" FontSize="15" FontWeight="Bold"/>
             <Border BorderThickness="2" BorderBrush="Black" Width="120"  Margin="17,0,0,0" CornerRadius="5,0,0,5">
                 <DatePicker x:Name="DatePicker" Width="120" Margin="0,0,0,0"/>
             </Border>
         </StackPanel>
         <StackPanel VerticalAlignment="Top" Margin="0,80,0,0" Orientation="Horizontal">
-            <TextBlock Text="Avilable   :" Margin="20,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="Avilable"/>
-            <TextBlock Text="18+   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="AgeEight"/>
-            <TextBlock Text="40+   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="AgeFouty"/>
-            <TextBlock Text="Free   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="Free"/>
-            <TextBlock Text="Dose 1   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="DosOne"/>
-            <TextBlock Text="Dose 2   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="DosTwo"/>
-            <TextBlock Text="Paid   :" Margin="17,0,0,0"/>
-            <CheckBox Margin="16,0,0,0" x:Name="Paid"/>
+            <TextBlock Text="Avilable   :" Margin="20,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="Avilable" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="18+   :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="AgeEight" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="40+   :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="AgeFouty" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="Free   :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="Free" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="Dose 1   :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="DosOne" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="Dose 2   :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="DosTwo" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
         </StackPanel>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,80,0,0">
-            <DataGrid IsReadOnly="True" AutoGenerateColumns="False" x:Name="VaccineGrid" Width="900" Height="300" Background="White">
+        <StackPanel VerticalAlignment="Top" Margin="0,115,0,0" Orientation="Horizontal">
+            <TextBlock Text="Paid         :" Margin="20,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="Paid" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}"/>
+            <TextBlock Text="COVISHIELD  :" Margin="17,0,0,0" FontSize="15" FontWeight="Bold"/>
+            <ToggleButton Margin="16,0,0,0"  x:Name="Covishield" Width="37" Height="20" VerticalAlignment="Center" Style="{StaticResource SwitchTypeToggleButton}" Click="Covishield_Click"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,110,0,0">
+            <DataGrid IsReadOnly="True" AutoGenerateColumns="False" x:Name="VaccineGrid" Width="1100" Height="300" Background="White">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Hospital" Binding="{Binding name}" Width="140"/>
-                    <DataGridTextColumn Header="Address" Binding="{Binding address}" Width="220"/>
-                    <DataGridTextColumn Header="Fee Type" Binding="{Binding fee_type}"/>
-                    <DataGridTextColumn Header="Date" Binding="{Binding date}"/>
-                    <DataGridTextColumn Header="Capacity" Binding="{Binding available_capacity}"/>
-                    <DataGridTextColumn Header="Dose One" Binding="{Binding available_capacity_dose1}"/>
-                    <DataGridTextColumn Header="Dose Two" Binding="{Binding available_capacity_dose2}"/>
-                    <DataGridTextColumn Header="Fee" Binding="{Binding fee}"/>
-                    <DataGridTextColumn Header="Age" Binding="{Binding min_age_limit}"/>
-                    <DataGridTextColumn Header="Vaccine" Binding="{Binding vaccine}"/>
+                    <DataGridTextColumn Header="Hospital" Binding="{Binding name}" Width="190"/>
+                    <DataGridTextColumn Header="Address" Binding="{Binding address}" Width="250"/>
+                    <DataGridTextColumn Header="Fee Type" Binding="{Binding fee_type}" Width="80">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Date" Binding="{Binding date}" Width="100">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Capacity" Binding="{Binding available_capacity}" Width="70">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Dose One" Binding="{Binding available_capacity_dose1}" Width="80">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Dose Two" Binding="{Binding available_capacity_dose2}" Width="80"/>
+
+                    <DataGridTextColumn Header="Fee" Binding="{Binding fee}" Width="65">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Age" Binding="{Binding min_age_limit}" Width="65">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="HorizontalAlignment" Value="Center" />
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Vaccine" Binding="{Binding vaccine}" Width="100"/>
                 </DataGrid.Columns>
             </DataGrid>
         </StackPanel>
@@ -96,23 +137,33 @@
 
         </StackPanel>
         <Grid>
-            <StackPanel Margin="0,15,60,0" Orientation="Horizontal" VerticalAlignment="Top" Height="120" HorizontalAlignment="Right">
+            <StackPanel Margin="0,35,90,0" Orientation="Horizontal" VerticalAlignment="Top" Height="120" HorizontalAlignment="Right">
                 <WrapPanel>
                     <StackPanel VerticalAlignment="Center">
-                        <Button Width="80" Click="Button_Click"  Content="Search" Margin="0,13,30,0" Height="28"  Style="{StaticResource ConfBtn}" Cursor="Hand" x:Name="SearchBtn"/>
+                        <Button Width="100" Click="Button_Click"  Content="Search" Margin="0,15,30,0" Height="33" FontWeight="Bold"  Style="{StaticResource ConfBtn}" Cursor="Hand" x:Name="SearchBtn"/>
                     </StackPanel>
-                    <StackPanel Margin="0,0,10,0">
-                        <Button Margin="0,0,0,0" Width="77" Height="24" Click="Button_Click_1" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11" Cursor="Hand">Book Vaccine</Button>
-                        <Button Margin="0,4,0,0" x:Name="SMSNotify" Width="77" Height="24" Click="SMSNotify_Click" Content="SMS Notify" Background="LightGreen" FontSize="11" Style="{StaticResource NormalBtn}" Cursor="Hand"/>
-                        <Button Margin="0,4,0,0" x:Name="AppNOtify" Width="77" Height="24" Click="AppNOtify_Click" Content="App Notify" Background="LightGreen" FontSize="11" Style="{StaticResource NormalBtn}" Cursor="Hand"/>
+                    <StackPanel Margin="0,10,10,0">
+                        <Button Margin="0,0,0,0" Width="77" Height="25" Click="Button_Click_1" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11" Cursor="Hand" FontWeight="Bold">Book Vaccine</Button>
+                        <Button Margin="0,4,0,0" x:Name="SMSNotify" Width="77" Height="25" Click="SMSNotify_Click" Content="SMS Notify" Background="LightGreen" FontSize="11" Style="{StaticResource NormalBtn}" Cursor="Hand" FontWeight="Bold"/>
+                        <Button Margin="0,4,0,0" x:Name="AppNOtify" Width="77" Height="25" Click="AppNOtify_Click" Content="App Notify" Background="LightGreen" FontSize="11" Style="{StaticResource NormalBtn}" Cursor="Hand" FontWeight="Bold"/>
                     </StackPanel>
-                    <StackPanel Margin="0,0,0,0">
-                        <Button Margin="0,0,0,0" HorizontalAlignment="Center" Cursor="Hand" MaxWidth="77" Width="77" Height="34" x:Name="SMSLoop" Click="SMSLoop_Click" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11">
-                            <TextBlock x:Name="loopbtncontent" TextAlignment="Center" Text="SMS Notify Loop" TextWrapping="Wrap"/>
+                    <StackPanel Margin="0,10,0,0">
+                        <Button Margin="0,2,0,0" HorizontalAlignment="Center" Cursor="Hand" MaxWidth="77" Width="77" Height="34" x:Name="SMSLoop" Click="SMSLoop_Click" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11">
+                            <TextBlock x:Name="loopbtncontent" TextAlignment="Center" FontWeight="Bold" Text="SMS Notify Loop" TextWrapping="Wrap"/>
+                        </Button>
+                        <Button Margin="0,10,0,0" HorizontalAlignment="Center" Cursor="Hand" MaxWidth="77" Width="77" Height="34" x:Name="Register" Click="Register_Click" Style="{StaticResource NormalBtn}" Background="LightGreen" FontSize="11">
+                            <TextBlock TextAlignment="Center" Text="Register / Sigin-In" FontWeight="Bold" TextWrapping="Wrap"/>
                         </Button>
                     </StackPanel>
                 </WrapPanel>
             </StackPanel>
+        </Grid>
+        <Grid x:Name="Logedusergrid" Visibility="Collapsed">
+            <WrapPanel VerticalAlignment="Top" Margin="0,5,12,0"
+                        HorizontalAlignment="Right">
+                <Label Content="Loged In :" Foreground="Green" FontSize="14" FontWeight="Bold"/>
+                <Label Foreground="Red" FontSize="14" x:Name="LogedUser" FontWeight="Bold"/>
+            </WrapPanel>
         </Grid>
     </Grid>
 </Window>

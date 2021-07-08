@@ -106,6 +106,13 @@ namespace VaccineFinder
                 count++;
             }
 
+            if (Covishield.IsChecked.Value)
+            {
+                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+                count++;
+            }
+
+
             if (count == 0)
             {
                 newlist = list.sessions;
@@ -189,20 +196,27 @@ namespace VaccineFinder
 
         private string ReturnHttpResult(string url)
         {
-            HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
-            request.ContentType = "application/json";
-            string responseData = string.Empty;
-
-            using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
+            try
             {
-                using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                HttpWebRequest request = WebRequest.Create(url) as HttpWebRequest;
+                request.ContentType = "application/json";
+                string responseData = string.Empty;
+
+                using (HttpWebResponse response = request.GetResponse() as HttpWebResponse)
                 {
-                    responseData = reader.ReadToEnd();
-                    reader.Close();
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        responseData = reader.ReadToEnd();
+                        reader.Close();
+                    }
+                    response.Close();
                 }
-                response.Close();
+                return responseData;
             }
-            return responseData;
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
         }
 
         private async void State_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -285,6 +299,12 @@ namespace VaccineFinder
             {
                 newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "Paid").ToList() : new List<Session>();
             }
+
+            if (Covishield.IsChecked.Value)
+            {
+                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+            }
+
             if (newlist.Any())
             {
                 PlayNotificationSound();
@@ -461,6 +481,12 @@ namespace VaccineFinder
             {
                 newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "Paid").ToList() : new List<Session>();
             }
+
+            if (Covishield.IsChecked.Value)
+            {
+                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+            }
+
             if (newlist.Any())
             {
                 if (!LoopSMS)
@@ -591,6 +617,29 @@ namespace VaccineFinder
                 }
             }
         }
+
+        private void Covishield_Click(object sender, RoutedEventArgs e)
+        {
+            if (Covishield.IsChecked.Value)
+            {
+                Avilable.IsChecked = true;
+            }
+        }
+
+        private async void Register_Click(object sender, RoutedEventArgs e)
+        {
+            new Login().ShowDialog();
+            if (VaccineHelper.Instance.IsUserLogedIn)
+            {
+                await ErrorDisplay("Logged as : " + VaccineHelper.Instance.UserName);
+                Logedusergrid.Visibility = Visibility.Visible;
+                LogedUser.Content = VaccineHelper.Instance.UserName;
+            }
+            else
+            {
+                Logedusergrid.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 
     public class InternetAvailability
@@ -643,6 +692,7 @@ namespace VaccineFinder
             get;
             set;
         }
+        public bool allow_all_age { get; set; }
         public string vaccine { get; set; }
     }
 
