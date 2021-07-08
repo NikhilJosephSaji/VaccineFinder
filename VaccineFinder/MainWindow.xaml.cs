@@ -72,13 +72,19 @@ namespace VaccineFinder
 
             if (AgeEight.IsChecked.Value && AgeFouty.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit == "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, true);                    
+                }
                 count++;
             }
 
             if (AgeFouty.IsChecked.Value && AgeEight.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit != "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, false);
+                }
                 count++;
             }
 
@@ -108,10 +114,9 @@ namespace VaccineFinder
 
             if (Covishield.IsChecked.Value)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+                newlist = newlist.Any() ? newlist.Where(x => x.vaccine == "COVISHIELD").ToList() : new List<Session>();
                 count++;
             }
-
 
             if (count == 0)
             {
@@ -122,7 +127,8 @@ namespace VaccineFinder
             {
                 foreach (var x in newlist)
                 {
-                    x.min_age_limit = x.min_age_limit + "+";
+                    string value = x.allow_all_age ? " All" : "";
+                    x.min_age_limit = x.min_age_limit + "+" + value;
                 }
                 await Task.Run(() => Thread.Sleep(1000));
                 VaccineGrid.ItemsSource = newlist;
@@ -130,6 +136,27 @@ namespace VaccineFinder
             }
 
             LayoutRoot.Visibility = Visibility.Collapsed;
+        }
+
+        private List<Session> Arrangelist(List<Session> newlist, bool age_18)
+        {
+            var temp = newlist.Where(x => x.allow_all_age == true).ToList();
+            var temp1 = new List<Session>();
+            if (age_18)
+            {
+                temp1 = newlist.Where(x => x.min_age_limit == "18" && !x.allow_all_age).ToList();
+            }
+            else
+            {
+                temp1 = newlist.Where(x => x.min_age_limit != "18" && !x.allow_all_age).ToList();
+            }
+
+            if (temp.Count != temp1.Count)
+            {
+                var secondNotFirst = temp.Union(temp1).ToList();
+                return secondNotFirst;
+            }
+            return newlist;
         }
 
         private async Task ErrorDisplay(string Error)
@@ -272,12 +299,18 @@ namespace VaccineFinder
 
             if (AgeEight.IsChecked.Value && AgeFouty.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit == "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, true);
+                }
             }
 
             if (AgeFouty.IsChecked.Value && AgeEight.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit != "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, false);
+                }
             }
 
             if (Free.IsChecked.Value && Paid.IsChecked.Value == false)
@@ -302,7 +335,7 @@ namespace VaccineFinder
 
             if (Covishield.IsChecked.Value)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+                newlist = newlist.Any() ? newlist.Where(x => x.vaccine == "COVISHIELD").ToList() : new List<Session>();
             }
 
             if (newlist.Any())
@@ -454,12 +487,18 @@ namespace VaccineFinder
 
             if (AgeEight.IsChecked.Value && AgeFouty.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit == "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, true);
+                }
             }
 
             if (AgeFouty.IsChecked.Value && AgeEight.IsChecked.Value == false)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.min_age_limit != "18").ToList() : new List<Session>();
+                if (newlist.Any())
+                {
+                    newlist = Arrangelist(newlist, false);
+                }
             }
 
             if (Free.IsChecked.Value && Paid.IsChecked.Value == false)
@@ -484,7 +523,7 @@ namespace VaccineFinder
 
             if (Covishield.IsChecked.Value)
             {
-                newlist = newlist.Any() ? newlist.Where(x => x.fee_type == "COVISHIELD").ToList() : new List<Session>();
+                newlist = newlist.Any() ? newlist.Where(x => x.vaccine == "COVISHIELD").ToList() : new List<Session>();
             }
 
             if (newlist.Any())
