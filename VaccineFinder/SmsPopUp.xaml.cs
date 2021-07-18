@@ -69,7 +69,7 @@ namespace VaccineFinder
             {
                 if (checkcorecturl())
                 {
-                    await SendSMS("Sample SMS From Vaccine Finder");
+                    await SendSMS("This is a Test SMS From Vaccine Finder.");
                 }
                 else
                 { ErrorText.Text = "Invalid URL"; }
